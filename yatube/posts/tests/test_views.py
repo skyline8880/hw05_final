@@ -122,7 +122,7 @@ class PostPagesTests(TestCase):
                     reverse(name, kwargs=params)
                 )
                 self.assertEqual(len(response.context['page_obj']), 10)
-                response = self.client.get(
+                response = self.authorized_client.get(
                     reverse(name, kwargs=params) + '?page=2'
                 )
                 self.assertEqual(len(response.context['page_obj']), 5)
