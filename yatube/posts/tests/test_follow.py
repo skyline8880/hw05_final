@@ -7,7 +7,7 @@ from ..models import Group, Post, Follow
 User = get_user_model()
 
 
-class PostPagesTests(TestCase):
+class FollowTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
