@@ -29,10 +29,6 @@ class PostPagesTests(TestCase):
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
-        self.authorized_client2 = Client()
-        self.authorized_client2.force_login(self.us02)
-        self.authorized_client3 = Client()
-        self.authorized_client3.force_login(self.us03)
 
     def test_pages_uses_correct_template(self):
         templates_pages_names = {
