@@ -78,7 +78,7 @@ class PostCreateFormTests(TestCase):
         self.post.refresh_from_db()
         self.assertEqual(Post.objects.count(), self.posts_count)
 
-    def test_create_task(self):
+    def test_create_image_post(self):
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -113,7 +113,7 @@ class PostCreateFormTests(TestCase):
         )
         self.assertEqual(Post.objects.count(), self.posts_count + 1)
 
-    def able_to_comment_post(self):
+    def test_able_to_comment_post(self):
         form_data = {
             'text': 'Коммент'
         }
@@ -121,9 +121,13 @@ class PostCreateFormTests(TestCase):
             reverse(
                 'posts:add_comment',
                 kwargs={'post_id': Post.objects.first().pk}
-            )
+            ),
+            data=form_data,
+            follow=True
         )
         self.assertTrue(
-            Comment.objects.filter(text=form_data.get('text')).exists()
+            Comment.objects.filter(
+                text=form_data.get('text'),
+                post=Post.objects.first().pk).exists()
         )
         self.assertContains(response, form_data.get('text'), status_code=200)

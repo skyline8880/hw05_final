@@ -47,10 +47,9 @@ def profile(request, username):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     following = False
-    if request.user.is_authenticated:
-        if Follow.objects.filter(author=user,
-           user=request.user).exists():
-            following = True
+    if request.user.is_authenticated and Follow.objects.filter(
+            author=user, user=request.user).exists():
+        following = True
     context = {
         'author': user,
         'count_posts': count_user_posts,
@@ -64,8 +63,7 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     user_posts = post.author.posts.all()
     count_user_posts = user_posts.count()
-    comment_post = Comment.objects.filter(
-        post=post_id).select_related('author').all()
+    comment_post = post.comments.all()
     form = CommentForm()
     context = {
         'count_posts': count_user_posts,
@@ -111,10 +109,11 @@ def post_edit(request, post_id):
 @login_required
 def add_comment(request, post_id):
     form = CommentForm(request.POST or None)
+    post = get_object_or_404(Post, pk=post_id)
     if form.is_valid():
         comment = form.save(commit=False)
         comment.author = request.user
-        comment.post = Post.objects.get(pk=post_id)
+        comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
 
@@ -139,10 +138,7 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     if author != request.user:
-        if Follow.objects.filter(user=request.user,
-                                 author=author).exists():
-            return redirect('posts:profile', username=username)
-        Follow.objects.create(author=author, user=request.user)
+        Follow.objects.get_or_create(author=author, user=request.user)
     return redirect('posts:profile', username=username)
 
 
