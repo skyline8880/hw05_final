@@ -39,29 +39,26 @@ class FollowTests(TestCase):
         self.authorized_client2.get(
             reverse('posts:profile_follow', kwargs={'username': self.user})
         )
-        Follow.objects.create(user=self.us02, author=self.us03)
         self.assertTrue(
             Follow.objects.filter(
                 user=self.us02,
-                author=self.us03
+                author=self.user
             ).exists()
         )
 
     def test_unfollow_author(self):
+        Follow.objects.create(user=self.us02, author=self.user)
         self.authorized_client2.get(
             reverse('posts:profile_unfollow', kwargs={'username': self.user})
         )
         self.assertFalse(
             Follow.objects.filter(
                 user=self.us02,
-                author=self.us03
+                author=self.user
             ).exists()
         )
 
-    def test_post_following_author(self):
-        self.authorized_client2.get(
-            reverse('posts:profile_follow', kwargs={'username': self.user})
-        )
+    def test_post_list_user_following_author(self):
         Follow.objects.create(user=self.us02, author=self.user)
         post_list2 = [
             Post(
@@ -75,6 +72,14 @@ class FollowTests(TestCase):
             response.context['page_obj'][0], self.user.posts.first()
         )
         response = self.authorized_client2.get(reverse('posts:index'))
+        self.assertEqual(
+            response.context['page_obj'][0], self.us03.posts.first()
+        )
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        self.assertEqual(
+            len(response.context['page_obj']), 0
+        )
+        response = self.authorized_client.get(reverse('posts:index'))
         self.assertEqual(
             response.context['page_obj'][0], self.us03.posts.first()
         )
