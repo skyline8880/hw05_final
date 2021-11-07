@@ -75,11 +75,9 @@ class FollowTests(TestCase):
         self.assertEqual(
             response.context['page_obj'][0], self.us03.posts.first()
         )
-        response = self.authorized_client.get(reverse('posts:follow_index'))
-        self.assertEqual(
-            len(response.context['page_obj']), 0
-        )
-        response = self.authorized_client.get(reverse('posts:index'))
+        response = self.authorized_client3.get(reverse('posts:follow_index'))
+        self.assertNotContains(response, self.user.posts.first())
+        response = self.authorized_client3.get(reverse('posts:index'))
         self.assertEqual(
             response.context['page_obj'][0], self.us03.posts.first()
         )
