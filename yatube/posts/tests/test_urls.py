@@ -87,7 +87,7 @@ class StaticURLTests(TestCase):
 
     def test_index_cache(self):
         response = self.authorized_client.get('/')
-        self.assertContains(response, self.post, status_code=200)
+        self.assertContains(response, self.post.text, status_code=200)
         new_data = {
             'text': f'{self.post.text} 2'
         }
